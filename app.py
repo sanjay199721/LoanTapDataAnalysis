@@ -93,7 +93,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load your trained model and preprocessor
-model = joblib.load('notebooks/pipeline_1.joblib')
+model = joblib.load('models/pipeline_1.joblib')
 # scaler = joblib.load('models/scaler.pkl')  # if you used scaling
 
 @app.route('/')
@@ -132,7 +132,7 @@ def predict():
             'address' : np.random.choice(['11650','22690','30723','48052','70466'])
             # Add other features your model uses
         }
-        
+        print(features)
         # Create DataFrame
         features['installment'] = features['loan_amnt']*(features['int_rate']/1200.0)*(1+features['int_rate']/1200.0)**float(features['term'][:2])/((1+features['int_rate']/1200.0)**float(features['term'][:2])-1)
         features['total_acc'] = round(features['open_acc']*10/7,0)
@@ -143,17 +143,18 @@ def predict():
         # Make prediction
         probability = model.predict_proba(input_df)[0][1]  # Probability of default
         prediction = model.predict(input_df)[0]  # 0 or 1
+        print(prediction,probability)
         # Get feature importance (if using logistic regression)
         feature_importance = dict(zip(
-            model[-2].get_fea,
-            abs(model[-1].coef_)
+            model[-2].get_feature_names_out(),
+            abs(model[-1].coef_[0])
         ))
         
         # Sort by importance
         top_factors = sorted(feature_importance.items(), 
                            key=lambda x: x[1], 
                            reverse=True)[:3]
-        
+        print(top_factors)
         response = {
             'default_probability': round(float(probability), 4),
             'risk_category': 'High' if probability > 0.45 else 'Medium' if probability > 0.3 else 'Low',
