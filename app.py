@@ -5,11 +5,19 @@ import numpy as np
 from flask_cors import CORS
 import os 
 from utils import *
+import sys
+import __main__
 # Update your functions to work with individual values:
 
+# Add the current directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
 CORS(app)
+
+for name in dir(sys.modules['utils']):
+    if not name.startswith('_'):
+        setattr(__main__, name, getattr(sys.modules['utils'], name))
 
 # Load your trained model and preprocessor
 model = joblib.load('models/pipeline_1.joblib')
