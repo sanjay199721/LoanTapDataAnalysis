@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 import numpy as np
 from flask_cors import CORS
+import os 
 # Update your functions to work with individual values:
 def convert_emp_str(x):
     if x<1:
@@ -129,7 +130,7 @@ def predict():
             'revol_bal' : float(data['revol_bal']),
             'intial_list_status' : 'w',
             'application_status' : 'INDIVIDUAL' , 
-            'address' : np.random.choice(['11650','22690','30723','48052','70466'])
+            'address' : np.random.choice(['22690','30723','48052','70466'])
             # Add other features your model uses
         }
         print(features)
@@ -146,8 +147,8 @@ def predict():
         print(prediction,probability)
         # Get feature importance (if using logistic regression)
         feature_importance = dict(zip(
-            model[-2].get_feature_names_out(),
-            abs(model[-1].coef_[0])
+            model[-2].get_feature_names_out()[9:],
+            abs(model[-1].coef_[0][9:])
         ))
         
         # Sort by importance
@@ -185,4 +186,4 @@ def model_info():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
