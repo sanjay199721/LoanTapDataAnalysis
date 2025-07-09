@@ -4,7 +4,7 @@ import joblib
 import numpy as np
 from flask_cors import CORS
 import os 
-import utils
+from utils import *
 # Update your functions to work with individual values:
 
 
